@@ -15,4 +15,6 @@ scons build/X86/gem5.opt -j {number of cpus}
 ```
 
 ## to run
+```
 build/X86/gem5.opt test.py
+```
