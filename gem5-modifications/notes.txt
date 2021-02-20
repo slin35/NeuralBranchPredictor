@@ -1,0 +1,12 @@
+# run from gem5 directory
+# files:
+# 	custom.cc: goes in src/cpu/pred
+# 	custom.hh: goes in src/cpu/pred
+#	BranchPredictor.py: goes in src/cpu/pred
+#	SConscript: goes in src/cpu/pred
+# 	custom_params.hh: goes in build/X86/params, rename to custom.hh
+>> scons build/X86/gem5.opt -j9
+>> build/X86/gem5.opt configs/example/se.py --list-bp-types
+>> build/X86/gem5.opt configs/example/se.py --cmd=tests/test-progs/hello/bin/x86/linux/hello --bp-type=custom
+>> grep 'branch' stats.txt
+
