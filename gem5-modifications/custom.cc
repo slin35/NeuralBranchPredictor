@@ -49,11 +49,15 @@
 #define SRAND_SEED 0xBEEF
 custom::custom(const customParams *params) : BPredUnit(params) // add more to this list
 {
-	srand(SRAND_SEED);
+
+	weights.assign(NUM_PERCEPTRON, std::vector<int>(HISTORY_LEN, 0));
+	theta = 1.93 * HISTORY_LEN + 14;
+
+/*	srand(SRAND_SEED);
 	for (int i=0; i < NUM_WEIGHTS; i++){
 		weights_1[i] = int8_t(rand() % 256) - 128;
 		global_history[i] = 0;
-	}
+	} */
 }
 
 
@@ -65,8 +69,21 @@ custom::custom(const customParams *params) : BPredUnit(params) // add more to th
 * @return Whether or not the branch is taken.
 */
 bool custom::lookup(ThreadID tid, Addr branch_addr, void* &bp_history){
-	pred_taken = inference();
-	return pred_taken;
+	/*pred_taken = inference();
+	return pred_taken; */
+	int idx = branch_addr % NUM_PERCEPTRON;
+	int sum = weights[idx][0];
+
+	for (int i = 1; i < HISTORY_LEN; i++) {
+		if (GHR[i - 1] == 1) {  // if branch taken
+			sum += weights[idx][i];
+		}
+		else {
+			sum -= weights[idx][i];
+		}
+	}
+
+	return sum >= 0;
 }
 
 
@@ -84,7 +101,36 @@ void custom::update(ThreadID tid, Addr branch_addr, bool taken, void *bp_history
         return;
     }
     
-    backprop(pred_taken, taken);   
+	int idx = branch_addr % NUM_PERCEPTRON;
+	int sum = weights[idx][0];
+
+	for (int i = 1; i < HISTORY_LEN; i++) {
+		if (GHR[i - 1] == 1) {  // if branch taken
+			sum += weights[idx][i];
+		}
+		else {
+			sum -= weights[idx][i];
+		}
+	}
+	
+	pred_taken = (sum >= 0);
+
+	if (pred_taken != taken || abs(sum) <= theta) {
+		for (int i = 0; i < HISTORY_LEN; i++) {
+			if (taken)
+				weights[idx][i] += 1;
+			else
+				weights[idx][i] -= 1;
+		}
+	}
+
+	// update GHR
+	GHR <<= 1;
+	if (taken)
+		GHR.set(0, 1);
+	else
+		GHR.set(0, 0);
+ //   backprop(pred_taken, taken);   
 }
 
 custom*
@@ -97,20 +143,20 @@ customParams::create()
 /* Implement Nueral Network Functionality Here  */
 bool custom::inference(){
 
-	int64_t sum = 0;
+/*	int64_t sum = 0;
 	for (int i = 0; i < NUM_WEIGHTS; i++){
 		sum += (int16_t) weights_1[i] * (int16_t) global_history[i];
 	}
 
 	if (sum >= 0){
 		return true;
-	}
+	} */
 	return false;
 }
 
 /* I don't remember how this works; it was in one of the papers */
 void custom::backprop(bool pred_taken, bool taken){
-	if (pred_taken && !taken){
+/*	if (pred_taken && !taken){
 		for (int i = 0; i < NUM_WEIGHTS; i++){
 			weights_1[i]--;
 		}
@@ -118,6 +164,6 @@ void custom::backprop(bool pred_taken, bool taken){
 		for (int i = 0; i < NUM_WEIGHTS; i++){
 			weights_1[i]++;
 		}
-	}
+	}*/
 }
 

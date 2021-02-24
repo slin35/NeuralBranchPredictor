@@ -56,17 +56,23 @@
 
 #define NUM_WEIGHTS 128
 
+#define HISTORY_LEN 12  // best between 12-62 depending on hardware budget
+#define NUM_PERCEPTRON 1024
+
+
 class custom: public BPredUnit
 {
 
   /* private variables and methods */
   private:
-    int8_t weights_1[NUM_WEIGHTS];
-    int8_t global_history[NUM_WEIGHTS];
+  //  int8_t weights_1[NUM_WEIGHTS];
+  //  int8_t global_history[NUM_WEIGHTS];
+    std::bitset<HISTORY_LEN> GHR;  // global history register
+    std::vector<std::vector<int>> weights;  // vector of weights indexed by perceptron
     bool pred_taken;
     bool inference();
     void backprop(bool pred_taken, bool taken);
-
+    float theta;  // threshold to decide whether the predictor needs more training
 
   public:
     custom(const customParams* params);
