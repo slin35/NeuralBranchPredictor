@@ -754,3 +754,9 @@ class custom(BranchPredictor):
 	type = 'custom'
 	cxx_class = 'custom'
 	cxx_header = 'cpu/pred/custom.hh'
+
+class piecewise(BranchPredictor):
+    type = 'piecewise'
+    cxx_class = 'piecewise'
+    cxx_header = 'cpu/pred/piecewise.hh'
+
