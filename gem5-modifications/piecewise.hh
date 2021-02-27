@@ -54,11 +54,24 @@
 #include "cpu/pred/bpred_unit.hh"
 #include "params/piecewise.hh"
 
+#define GHL 26  // the global history length
+#define N 8   // address range
+#define M 118   // GA range
+
+#define HASH_PRIME_1 511387U
+#define HASH_PRIME_2 660509U
+#define HASH_PRIME_3 1289381U
 
 class piecewise: public BPredUnit
 {
 
   /* private variables and methods */
+  private:
+    std::bitset<GHL> GHR; // global history length
+    std::vector<int> GA;  // global array of previous branch addresses
+    std::vector<std::vector<std::vector<int>>> weights; // n x m x (GHL + 1)
+    float theta;  // threshold to decide whether the predictor needs more training
+    int sum;
 
   public:
     piecewise(const piecewiseParams* params);

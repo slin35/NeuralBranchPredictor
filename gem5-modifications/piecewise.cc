@@ -49,7 +49,9 @@
 #define SRAND_SEED 0xBEEF
 piecewise::piecewise(const piecewiseParams *params) : BPredUnit(params) // add more to this list
 {
-
+    weights.assign(N, std::vector<int>(M, std::vector<int>(GHL + 1, 0)));
+    GA.assign(GHL, 0);
+    theta =  2.14 * (GHL + 1) + 20.58;
 }
 
 
@@ -61,7 +63,21 @@ piecewise::piecewise(const piecewiseParams *params) : BPredUnit(params) // add m
 * @return Whether or not the branch is taken.
 */
 bool piecewise::lookup(ThreadID tid, Addr branch_addr, void* &bp_history){
-    return false;
+    int addr = branch_addr % N;
+    sum = weights[addr][0][0];
+
+    for (int i = 1; i < GHL; i++) {
+        int j = GA[i] % M;
+
+        if (GHR[i] == 1) { // if branch taken
+            sum += weights[addr][j][i];
+        }
+        else {
+            sum -= weights[addr][j][i];
+        }
+    }
+
+    return sum >= 0;
 }
 
 
@@ -78,8 +94,45 @@ void piecewise::update(ThreadID tid, Addr branch_addr, bool taken, void *bp_hist
     if (squashed) {
         return;
     }
+
+    bool prediction = (sum >= 0);
+    int addr = branch_addr % N;
+
+    if (prediction != taken || abs(sum) < theta) {
+        if (taken) {
+            weights[addr][0][0] += 1;
+        }
+        else {
+            weights[addr][0][0] -= 1;
+        }
+
+        for (int i = 1; i < GHL; i++) {
+            int j = GA[i] % M;
+            if (GHR[i] == 1) { // branch taken
+                weights[addr][j][i] += 1;
+            }
+            else {
+                weights[addr][j][i] -= 1;
+            }
+        }
+    }
+
+    // update GA
+    for (int i = GHL - 1; i >= 1; i--) {
+        GA[i] = GA[i - 1];
+    }
+    GA[0] = branch_addr;
+
+    // update GHR
+	GHR <<= 1;
+	if (taken)
+		GHR.set(0, 1);
+	else
+		GHR.set(0, 0);
     
 }
+
+
 
 piecewise*
 piecewiseParams::create()
