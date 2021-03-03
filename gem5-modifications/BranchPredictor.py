@@ -760,3 +760,9 @@ class piecewise(BranchPredictor):
     cxx_class = 'piecewise'
     cxx_header = 'cpu/pred/piecewise.hh'
 
+class PathBasedPerceptron(BranchPredictor):
+    type = 'PathBasedPerceptron'
+    cxx_class = 'PathBasedPerceptron'
+    cxx_header = 'cpu/pred/PathBasedPerceptron.hh'
+
+
