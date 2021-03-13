@@ -38,7 +38,7 @@ system.mem_ctrl.dram.range = system.mem_ranges[0]
 system.mem_ctrl.port = system.membus.master
 
 process = Process()
-process.cmd = ['tests/test-progs/hello/bin/x86/linux/hello']
+process.cmd = ['../test_programs/rsa']
 system.cpu.workload = process
 system.cpu.createThreads()
 

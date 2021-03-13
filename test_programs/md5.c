@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <string.h>
+#include <unistd.h>
 
 // s specifies the per-round shift amounts
 const uint32_t s[64] = {
@@ -34,7 +35,7 @@ const uint32_t K[64] = {
 #define B0 0xefcdab89   // B
 #define C0 0x98badcfe   // C
 #define D0 0x10325476   // D
-#define MSG_SIZE 262144
+#define MSG_SIZE 5000*262144
 #define LEFTROTATE(x, c) (((x) << (c)) | ((x) >> (32 - (c))))    // left rotate
 
 uint32_t variables[] = {A0, B0, C0, D0};
@@ -47,13 +48,15 @@ uint32_t string_to_int32(char *msg) {
         | ((uint32_t)msg[3] << 24);
 }
 
-void md5(char *message, size_t msg_size, char *result) {
+
+char msg[MSG_SIZE];
+void md5(size_t msg_size, char *result) {
     // ------------------preprocessing------------------------------
-    char msg[MSG_SIZE];
     size_t size;
-    for (size = msg_size; size % (512/8) != 448/8; size++);
+    for (size = msg_size; size % (512/8) != 448/8; size++){}
     
-    memcpy(msg, message, msg_size);
+    //memcpy(msg, message, msg_size);
+    
     // append "1" bit to message 
     // where the first bit is the most significant bit of the byte
     // note: all values are in little-endian, so most significant bit is on the largest address
@@ -64,7 +67,7 @@ void md5(char *message, size_t msg_size, char *result) {
     }
 
     // append original length in bits mod 2^64 to message
-    uint32_t value = (msg_size * 8) % (int)pow(2, 64);
+    uint32_t value = (msg_size * 8) % (uint64_t)pow(2, 64);
     msg[size] = (char)value;
     msg[size + 1] = (char)(value >> 8);
     msg[size + 2] = (char)(value >> 16);
@@ -134,12 +137,22 @@ void md5(char *message, size_t msg_size, char *result) {
 
 
 int main() {
-    char message[] = "The quick brown fox jumps over the lazyy dog";
+    //char message[] = "The quick brown fox jumps over the lazy dog";
     char result[16];
 
-    int msg_size = strlen(message);
+    //int msg_size = strlen(message);
 
-    md5(message, msg_size, result);
+    int msg_size = 0;
+    
+    int num_bytes;
+
+    while ( (num_bytes = read(STDIN_FILENO, msg, 512)) != 0 ){
+        msg_size += num_bytes;
+    };
+
+    md5(msg_size, result);
+    
+    write(STDOUT_FILENO, result, 16);
 
     return 0;
 }

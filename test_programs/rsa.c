@@ -10,62 +10,26 @@
 
 uint64_t encrypt(uint64_t m, uint64_t e, uint64_t n){
 	
-	/* 1. Initialize the number */
-	mpz_t accul;
-	mpz_init(accul);
-	mpz_set_ui(accul,m);
+	uint64_t accul = 1;
 	
-	mpz_pow_ui(accul,accul,e);
-	
-
-	
-	mpz_mod_ui(accul, accul, n);
-	
-	//mpz_out_str(stdout, 10, accul);
-
-	uint64_t result = mpz_get_ui(accul);
-
-	mpz_clear(accul);
-
-	return result;
-	
-	
+	for (int i = 0; i < e; i++){
+		accul *= m;
+	}
+	return accul %= n;
 }
 
-uint64_t decrypt(uint64_t value, uint64_t d, uint64_t n){
-	
-	mpz_t accul;
-	mpz_init(accul);
-	mpz_set_ui(accul,value);
-	
-	mpz_pow_ui(accul,accul,d);
-
-	
-	mpz_mod_ui(accul, accul, n);
-	
-	//mpz_out_str(stdout, 10, accul);
-
-	uint64_t result = mpz_get_ui(accul);
-
-	mpz_clear(accul);
-
-	return result;
-	
-
-}
-
-
-#define BUFFER_LEN 16777216
+#define BASE_CHAR 'A'
+#define BUFFER_LEN 500000000
 uint64_t msg_encrypted[BUFFER_LEN];
 unsigned char msg_decrypted[BUFFER_LEN];
 int main(){
 	
-	int p = 61;
-	int q = 53;
+	int p = 2;
+	int q = 7;
 	int n = p * q;
 	
-	int e = 17;
-	int d = 2753;
+	int e = 5;
+	int d = 11;
 	
 	//char* msg = "Hello World";
 	//int msg_len = strlen(msg);
@@ -80,20 +44,23 @@ int main(){
 	int msg_len = 0;
 	char ch;
 	while( read(STDIN_FILENO, &ch, 1) != 0  ){
-		msg_encrypted[msg_len++] = encrypt(ch,e,n);
+		msg_encrypted[msg_len++] = encrypt( (ch-BASE_CHAR), e, n);
 	}
+	//msg_len--;
 	
+	/*for (int i = 0; i < msg_len; i++){
+		printf("%c", msg_encrypted[i] + BASE_CHAR);
+	}
+	printf("\n");*/
 	
-	//printf("Cipher: %d\n", cipher);
-
 	/*
 	for (int i = 0; i < msg_len; i++){
 		msg_decrypted[i] = (char) decrypt(msg_encrypted[i],d,n);
 	}*/
 	for (int i = 0; i < msg_len; i++){
-		msg_decrypted[i] = (unsigned char) decrypt(msg_encrypted[i],d,n);
+		msg_decrypted[i] = (unsigned char) encrypt(msg_encrypted[i],d,n) + BASE_CHAR;
 	}
-	msg_decrypted[msg_len] = '\0';
+	//msg_decrypted[msg_len++] = '\n';
 	
 	write(STDOUT_FILENO, msg_decrypted, msg_len);
 	
