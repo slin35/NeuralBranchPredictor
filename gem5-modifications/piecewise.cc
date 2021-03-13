@@ -49,7 +49,9 @@
 #define SRAND_SEED 0xBEEF
 piecewise::piecewise(const piecewiseParams *params) : BPredUnit(params) // add more to this list
 {
-    weights.assign(N, std::vector<int>(M, std::vector<int>(GHL + 1, 0)));
+    std::vector<std::vector<int>> w;
+    w.assign(M, std::vector<int>(GHL + 1, 0));
+    weights.assign(N, w);
     GA.assign(GHL, 0);
     theta =  2.14 * (GHL + 1) + 20.58;
 }
