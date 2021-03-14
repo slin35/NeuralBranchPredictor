@@ -18,7 +18,7 @@ prog : prog.c
 	$(CXX) $(FLAGS) -o prog prog.c
 	
 rsa : rsa.c
-	$(CXX) $(FLAGS) -o rsa rsa.c
+	$(CXX) $(FLAGS) -mcmodel=medium -o rsa rsa.c
 	
 mzip : minigzip.c
 	$(CXX) $(FLAGS) -o mzip minigzip.c libz.a
