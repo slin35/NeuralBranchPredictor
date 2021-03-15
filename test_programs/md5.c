@@ -35,7 +35,7 @@ const uint32_t K[64] = {
 #define B0 0xefcdab89   // B
 #define C0 0x98badcfe   // C
 #define D0 0x10325476   // D
-#define MSG_SIZE 5000*262144
+#define MSG_SIZE 4 * 262144
 #define LEFTROTATE(x, c) (((x) << (c)) | ((x) >> (32 - (c))))    // left rotate
 
 uint32_t variables[] = {A0, B0, C0, D0};

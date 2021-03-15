@@ -18,7 +18,7 @@ uint64_t encrypt(uint64_t m, uint64_t e, uint64_t n){
 }
 
 #define BASE_CHAR 'A'
-#define BUFFER_LEN 500000000
+#define BUFFER_LEN 1000000
 uint64_t msg_encrypted[BUFFER_LEN];
 unsigned char msg_decrypted[BUFFER_LEN];
 int main(){

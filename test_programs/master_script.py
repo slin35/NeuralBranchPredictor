@@ -2,9 +2,9 @@ import os
 import re
 import sys
 
-args_rsa = ('rsa', '2000000000', 'pi_out.txt', 'pi_out.txt')
-args_pi = ('pi', '1000000', 'pi_out.txt', 'pi_out.txt')
-args_md5 = ('md5', '2000000000', 'pi_out.txt', 'md5_out.txt')
+args_rsa = ('rsa', '5000000000', 'kjv_part.txt', 'rsa_out.txt')
+args_pi = ('pi', '5000000', 'pi_out.txt', 'pi_out.txt')
+args_md5 = ('md5', '5000000000', 'kjv_part.txt', 'md5_out.txt')
 
 cmd_args = (args_rsa, args_pi, args_md5)
 bps = ('custom', 'PathBasedPerceptron', 'piecewise')
