@@ -15,6 +15,22 @@ scons build/X86/gem5.opt -j {number of cpus}
 ```
 
 ## to run
+to run any python scripts
 ```
-build/X86/gem5.opt test.py
+build/X86/gem5.opt test_script.py
+```
+
+to print out list of branch predictors in gem5
+```
+build/X86/gem5.opt configs/example/se.py --list-bp-types
+```
+
+to run the executables with a specified branch predictor
+```
+build/X86/gem5.opt configs/example/se.py --cmd=[executables] --bp-type=[name_of_branch_predictor]
+```
+
+to get stats related to the performance of branch preditors
+```
+grep 'branch' m5out/stats.txt
 ```
